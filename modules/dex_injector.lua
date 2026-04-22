@@ -119,18 +119,30 @@ NetSpyToggle.MouseButton1Click:Connect(function()
     AddLog(NetSpyScroll, NetSpyList, netSpyEnabled and "[INFO] Net Spy Started. Listening..." or "[INFO] Net Spy Stopped.", Color3.fromRGB(16, 185, 129))
 end)
 
-oldNamecall = hookmetamethod(game, "__namecall", function(self, ...)
+oldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    -- Anti-Bait: Confirm the self argument is actually an Instance
+    if typeof(self) ~= "Instance" then
+        return oldNamecall(self, ...)
+    end
+
     local method = getnamecallmethod()
+    
     if netSpyEnabled and not checkcaller() and (method == "FireServer" or method == "InvokeServer") then
+        -- Safe Property Check: Avoid Indexing errors on trapped/tampered instances
+        local success, instName = pcall(function() return self.Name end)
+        if not success then instName = "ProtectedInstance" end
+
         local args = {...}
         local typeStr = {}
         for _, v in ipairs(args) do table.insert(typeStr, typeof(v)) end
-        local trace = string.format("[SPY] %s -> %s | Args: [%s]", method, tostring(self), table.concat(typeStr, ", "))
+        
+        local trace = string.format("[SPY] %s -> %s | Args: [%s]", method, tostring(instName), table.concat(typeStr, ", "))
         
         task.spawn(AddLog, NetSpyScroll, NetSpyList, trace, Color3.fromRGB(56, 189, 248))
     end
+    
     return oldNamecall(self, ...)
-end)
+end))
 
 -- B. Audit Scanner Setup
 local AuditPanel, AuditBack, AuditScroll, AuditList = CreateMobilePanel("Audit Scanner")

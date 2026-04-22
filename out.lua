@@ -11111,27 +11111,3 @@ end)()
 Main.Init()
 
 --for i,v in pairs(Main.MissingEnv) do print(i,v) end
-
-	-- ==========================================
--- MEMUAT CUSTOM INJECTOR (FITUR BARU)
--- ==========================================
-task.spawn(function()
-    -- URL langsung ke file dex_injector.lua di repositori Anda
-    local injectorUrl = "https://raw.githubusercontent.com/prisma-ui/Dexter/main/modules/dex_injector.lua"
-    
-    local success, err = pcall(function()
-        -- Mengambil dan mengeksekusi kode injector
-        local loadFunc = loadstring(game:HttpGet(injectorUrl, true))
-        if loadFunc then
-            loadFunc()
-            print("[DEXTER] dex_injector.lua berhasil dimuat!")
-        else
-            warn("[DEXTER] Gagal mem-parsing kode dex_injector.lua")
-        end
-    end)
-
-    if not success then
-        warn("[DEXTER ERROR] Gagal menjalankan injector: " .. tostring(err))
-    end
-end)
-
