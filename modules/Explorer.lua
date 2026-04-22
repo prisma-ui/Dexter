@@ -868,7 +868,8 @@ local function main()
 			context:AddRegistered("COPY_PATH")
 		end
 		context:AddRegistered("INSERT_OBJECT")
-		context:AddRegistered("SAVE_INST")
+		context:AddRegistered("SAVE_MODEL")
+        context:AddRegistered("SAVE_GAME")
 		context:AddRegistered("CALL_FUNCTION")
 		context:AddRegistered("VIEW_CONNECTIONS")
 		context:AddRegistered("GET_REFERENCES")
@@ -1209,9 +1210,35 @@ local function main()
 
 		end})
 
-		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
+		context:Register("SAVE_MODEL", {
+        Name = "Save Selected (.rbxm)", 
+        IconMap = Explorer.MiscIcons, 
+        Icon = "Save", 
+        OnClick = function()
+        local sList = selection.List
+        if #sList > 0 then
+            -- Memanggil fungsi dari modul SaveInstance yang ada di tabel global Apps
+            if Apps.SaveInstance then
+                Apps.SaveInstance.SaveModel(sList[1].Obj) -- Menyimpan objek pertama yang dipilih
+            else
+                warn("Modul SaveInstance tidak ditemukan!")
+            end
+        else
+            warn("Pilih objek terlebih dahulu!")
+        end
+        end})
 
-		end})
+        context:Register("SAVE_GAME", {
+        Name = "Save Entire Game (.rbxl)", 
+        IconMap = Explorer.MiscIcons, 
+        Icon = "Save", 
+        OnClick = function()
+        if Apps.SaveInstance then
+            Apps.SaveInstance.SaveAll()
+        else
+            warn("Modul SaveInstance tidak ditemukan!")
+        end
+        end})
 
 		context:Register("VIEW_CONNECTIONS",{Name = "View Connections", OnClick = function()
 
